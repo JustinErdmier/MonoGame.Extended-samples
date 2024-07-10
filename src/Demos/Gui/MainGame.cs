@@ -38,7 +38,7 @@ public class MainGame : Game
         DefaultViewportAdapter viewportAdapter = new(GraphicsDevice);
         GuiSpriteBatchRenderer guiRenderer     = new(GraphicsDevice, () => Matrix.Identity);
         BitmapFont             font            = Content.Load<BitmapFont>(assetName: "Sensation");
-        BitmapFont.UseKernings = false;
+        font.UseKernings = false;
         Skin.CreateDefault(font);
 
         //var parser = new MarkupParser();
