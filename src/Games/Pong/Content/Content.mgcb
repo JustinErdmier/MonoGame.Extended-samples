@@ -10,7 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\..\..\..\.nuget\packages\monogame.extended.content.pipeline\3.9.0-prerelease.4\tools\MonoGame.Extended.Content.Pipeline.dll
+/reference:D:\Packages\NuGet\Cache\monogame.extended.content.pipeline\3.9.0-prerelease.4\tools\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -96,4 +96,3 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:title-screen.png
-
