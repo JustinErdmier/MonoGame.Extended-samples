@@ -34,10 +34,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace StarWarrior.Components
+namespace StarWarrior.Components;
+
+public class SpatialFormComponent
 {
-    public class SpatialFormComponent
-    {
-        public string SpatialFormFile { get; set; }
-    }
+    public string SpatialFormFile { get; set; }
 }

@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace Pong
+namespace Pong;
+
+public static class Program
 {
-    public static class Program
+    [ STAThread ]
+    private static void Main()
     {
-        [STAThread]
-        private static void Main()
-        {
-            using (var game = new GameMain())
-                game.Run();
-        }
+        using (GameMain game = new())
+            game.Run();
     }
 }

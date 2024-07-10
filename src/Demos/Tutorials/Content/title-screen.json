@@ -6,12 +6,12 @@
       "Name": "MainPanel",
       "HorizontalAlignment": "Centre",
       "VerticalAlignment": "Bottom",
-      "Margin": "0 0 0 50", 
+      "Margin": "0 0 0 50",
       "Controls": [
         {
           "Type": "Button",
           "Name": "PlayButton",
-          "Width": "200", 
+          "Width": "200",
           "Text": "Play",
           "Style": "white-button"
         },

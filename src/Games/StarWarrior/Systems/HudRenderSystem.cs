@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HudRenderSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -34,56 +34,58 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 using System;
 using System.Text;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class HudRenderSystem : EntityDrawSystem
 {
-    public class HudRenderSystem : EntityDrawSystem
+    private readonly BitmapFont _font;
+
+    private readonly GraphicsDevice _graphicsDevice;
+
+    private readonly SpriteBatch _spriteBatch;
+
+    private readonly StringBuilder _stringBuilder = new();
+
+    public HudRenderSystem(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, BitmapFont font)
+        : base(aspect: Aspect.All(typeof(PlayerComponent), typeof(HealthComponent)))
     {
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly BitmapFont _font;
-        private readonly SpriteBatch _spriteBatch;
-        private readonly StringBuilder _stringBuilder = new StringBuilder();
+        _graphicsDevice = graphicsDevice;
+        _spriteBatch    = spriteBatch;
+        _font           = font;
+    }
 
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
 
-        public HudRenderSystem(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, BitmapFont font) 
-            : base(Aspect.All(typeof(PlayerComponent), typeof(HealthComponent)))
+    public override void Draw(GameTime gameTime)
+    {
+        foreach (int entityId in ActiveEntities)
         {
-            _graphicsDevice = graphicsDevice;
-            _spriteBatch = spriteBatch;
-            _font = font;
-        }
+            Entity          entity = GetEntity(entityId);
+            PlayerComponent player = entity.Get<PlayerComponent>();
+            HealthComponent health = entity.Get<HealthComponent>();
 
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-        }
+            Viewport viewport       = _graphicsDevice.Viewport;
+            Vector2  renderPosition = new(x: 20, y: viewport.Height - 40);
 
-        public override void Draw(GameTime gameTime)
-        {
-            foreach (var entityId in ActiveEntities)
-            {
-                var entity = GetEntity(entityId);
-                var player = entity.Get<PlayerComponent>();
-                var health = entity.Get<HealthComponent>();
+            _stringBuilder.Clear();
+            _stringBuilder.Append(value: "Health: ");
+            _stringBuilder.Append(value: (float)Math.Round(value: health.Ratio * 100, digits: 1));
+            _stringBuilder.Append(value: "%");
 
-                var viewport = _graphicsDevice.Viewport;
-                var renderPosition = new Vector2(20, viewport.Height - 40);
-
-                _stringBuilder.Clear();
-                _stringBuilder.Append("Health: ");
-                _stringBuilder.Append((float)Math.Round(health.Ratio * 100, 1));
-                _stringBuilder.Append("%");
-
-                _spriteBatch.DrawString(_font, _stringBuilder, renderPosition, Color.White);
-            }
+            _spriteBatch.DrawString(_font, _stringBuilder, renderPosition, Color.White);
         }
     }
 }

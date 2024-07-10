@@ -34,9 +34,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace StarWarrior.Components
-{
-    public class EnemyComponent
-    {
-    }
-}
+namespace StarWarrior.Components;
+
+public class EnemyComponent
+{ }

@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RenderSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -35,70 +35,76 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 using StarWarrior.Spatials;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class RenderSystem : EntityDrawSystem
 {
-    public class RenderSystem : EntityDrawSystem
+    private readonly ContentManager _contentManager;
+
+    private readonly SpriteBatch _spriteBatch;
+
+    public RenderSystem(SpriteBatch spriteBatch, ContentManager contentManager)
+        : base(aspect: Aspect.All(typeof(SpatialFormComponent), typeof(Transform2)))
     {
-        private readonly ContentManager _contentManager;
-        private readonly SpriteBatch _spriteBatch;
+        _spriteBatch    = spriteBatch;
+        _contentManager = contentManager;
+    }
 
-        public RenderSystem(SpriteBatch spriteBatch, ContentManager contentManager) 
-            : base(Aspect.All(typeof(SpatialFormComponent), typeof(Transform2)))
-        {
-            _spriteBatch = spriteBatch;
-            _contentManager = contentManager;
-        }
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
 
-        public override void Initialize(IComponentMapperService mapperService)
+    public override void Draw(GameTime gameTime)
+    {
+        foreach (int entityId in ActiveEntities)
         {
-        }
+            Entity               entity    = GetEntity(entityId);
+            SpatialFormComponent spatial   = entity.Get<SpatialFormComponent>();
+            Transform2           transform = entity.Get<Transform2>();
 
-        public override void Draw(GameTime gameTime)
-        {
-            foreach (var entityId in ActiveEntities)
+            string spatialName = spatial.SpatialFormFile;
+
+            Vector2 worldPosition = transform.WorldPosition;
+
+            if (!(worldPosition.X >= 0) ||
+                !(worldPosition.Y >= 0) ||
+                !(worldPosition.X < _spriteBatch.GraphicsDevice.Viewport.Width) ||
+                !(worldPosition.Y < _spriteBatch.GraphicsDevice.Viewport.Height))
             {
-                var entity = GetEntity(entityId);
-                var spatial = entity.Get<SpatialFormComponent>();
-                var transform = entity.Get<Transform2>();
+                return;
+            }
 
-                var spatialName = spatial.SpatialFormFile;
-
-                var worldPosition = transform.WorldPosition;
-                if (!(worldPosition.X >= 0) || !(worldPosition.Y >= 0) ||
-                    !(worldPosition.X < _spriteBatch.GraphicsDevice.Viewport.Width) ||
-                    !(worldPosition.Y < _spriteBatch.GraphicsDevice.Viewport.Height))
-                    return;
-
-                // very naive render ...
-                if (string.Compare("PlayerShip", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    PlayerShip.Render(_spriteBatch, _contentManager, transform);
-                }
-                else if (string.Compare("Missile", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    Missile.Render(_spriteBatch, _contentManager, transform);
-                }
-                else if (string.Compare("EnemyShip", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    EnemyShip.Render(_spriteBatch, _contentManager, transform);
-                }
-                else if (string.Compare("BulletExplosion", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    Explosion.Render(_spriteBatch, _contentManager, transform, Color.Red, 10);
-                }
-                else if (string.Compare("ShipExplosion", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    ShipExplosion.Render(_spriteBatch, _contentManager, transform, Color.Yellow, 30);
-                }
+            // very naive render ...
+            if (string.Compare(strA: "PlayerShip", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                PlayerShip.Render(_spriteBatch, _contentManager, transform);
+            }
+            else if (string.Compare(strA: "Missile", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                Missile.Render(_spriteBatch, _contentManager, transform);
+            }
+            else if (string.Compare(strA: "EnemyShip", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                EnemyShip.Render(_spriteBatch, _contentManager, transform);
+            }
+            else if (string.Compare(strA: "BulletExplosion", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                Explosion.Render(_spriteBatch, _contentManager, transform, Color.Red, radius: 10);
+            }
+            else if (string.Compare(strA: "ShipExplosion", spatialName, StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                ShipExplosion.Render(_spriteBatch, _contentManager, transform, Color.Yellow, radius: 30);
             }
         }
     }

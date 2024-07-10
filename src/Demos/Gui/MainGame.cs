@@ -1,188 +1,203 @@
 ﻿using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Gui;
 using MonoGame.Extended.Gui.Controls;
-using MonoGame.Extended.Gui.Markup;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace Gui
+namespace Gui;
+
+public class MainGame : Game
 {
-    public class MainGame : Game
+    // ReSharper disable once NotAccessedField.Local
+    private readonly GraphicsDeviceManager _graphicsDeviceManager;
+
+    private GuiSystem _guiSystem;
+
+    public MainGame()
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly GraphicsDeviceManager _graphicsDeviceManager;
-        private GuiSystem _guiSystem;
+        _graphicsDeviceManager = new GraphicsDeviceManager(game: this);
 
-        public MainGame()
+        Content.RootDirectory    =  "Content";
+        IsMouseVisible           =  true;
+        Window.AllowUserResizing =  true;
+        Window.ClientSizeChanged += WindowOnClientSizeChanged;
+    }
+
+    private void WindowOnClientSizeChanged(object sender, EventArgs eventArgs)
+    {
+        _guiSystem.ClientSizeChanged();
+    }
+
+    protected override void LoadContent()
+    {
+        DefaultViewportAdapter viewportAdapter = new(GraphicsDevice);
+        GuiSpriteBatchRenderer guiRenderer     = new(GraphicsDevice, () => Matrix.Identity);
+        BitmapFont             font            = Content.Load<BitmapFont>(assetName: "Sensation");
+        BitmapFont.UseKernings = false;
+        Skin.CreateDefault(font);
+
+        //var parser = new MarkupParser();
+
+        //var mainScreen = new Screen
+        //{
+        //    Content = parser.Parse("Features/MainWindow.mgeml", new object())
+        //};
+
+        //var textBox = mainScreen.FindControl<TextBox>("TextBox");
+        //var statusLabel = mainScreen.FindControl<Label>("StatusLabel");
+
+        //textBox.CaretIndexChanged += (sender, args) =>
+        //    statusLabel.Content = $"Ln {textBox.LineIndex + 1}, Ch {textBox.CaretIndex + 1}";
+
+        DemoViewModel stackTest = new(name: "Stack Panels",
+                                      content: new StackPanel
+                                      {
+                                          Items =
+                                          {
+                                              new Button
+                                              {
+                                                  Content             = "Press Me",
+                                                  HorizontalAlignment = HorizontalAlignment.Left,
+                                                  VerticalAlignment   = VerticalAlignment.Top
+                                              },
+                                              new Button
+                                              {
+                                                  Content             = "Press Me",
+                                                  HorizontalAlignment = HorizontalAlignment.Right,
+                                                  VerticalAlignment   = VerticalAlignment.Bottom
+                                              },
+                                              new Button
+                                              {
+                                                  Content             = "Press Me",
+                                                  HorizontalAlignment = HorizontalAlignment.Centre,
+                                                  VerticalAlignment   = VerticalAlignment.Centre
+                                              },
+                                              new Button
+                                              {
+                                                  Content             = "Press Me",
+                                                  HorizontalAlignment = HorizontalAlignment.Stretch,
+                                                  VerticalAlignment   = VerticalAlignment.Stretch
+                                              }
+                                          }
+                                      });
+
+        DemoViewModel dockTest = new(name: "Dock Panels",
+                                     content: new DockPanel
+                                     {
+                                         Items =
+                                         {
+                                             new Button { Content = "Dock.Top", AttachedProperties    = { { DockPanel.DockProperty, Dock.Top } } },
+                                             new Button { Content = "Dock.Bottom", AttachedProperties = { { DockPanel.DockProperty, Dock.Bottom } } },
+                                             new Button { Content = "Dock.Left", AttachedProperties   = { { DockPanel.DockProperty, Dock.Left } } },
+                                             new Button { Content = "Dock.Right", AttachedProperties  = { { DockPanel.DockProperty, Dock.Right } } },
+                                             new Button { Content = "Fill" }
+                                         }
+                                     });
+
+        DemoViewModel controlTest = new(name: "Basic Controls",
+                                        content: new StackPanel
+                                        {
+                                            Margin      = 5,
+                                            Orientation = Orientation.Vertical,
+                                            Items =
+                                            {
+                                                new Label(text: "Buttons") { Margin = 5 },
+                                                new StackPanel
+                                                {
+                                                    Orientation = Orientation.Horizontal,
+                                                    Spacing     = 5,
+                                                    Items =
+                                                    {
+                                                        new Button { Content       = "Enabled" },
+                                                        new Button { Content       = "Disabled", IsEnabled = false },
+                                                        new ToggleButton { Content = "ToggleButton" }
+                                                    }
+                                                },
+                                                new Label(text: "TextBox") { Margin = 5 },
+                                                new TextBox { Text = "TextBox" },
+                                                new Label(text: "CheckBox") { Margin = 5 },
+                                                new CheckBox { Content = "Check me please!" },
+                                                new Label(text: "ListBox") { Margin = 5 },
+                                                new ListBox { Items = { "ListBoxItem1", "ListBoxItem2", "ListBoxItem3" }, SelectedIndex = 0 },
+                                                new Label(text: "ProgressBar") { Margin = 5 },
+                                                new ProgressBar { Progress = 0.5f, Width = 100 },
+                                                new Label(text: "ComboBox") { Margin = 5 },
+                                                new ComboBox
+                                                {
+                                                    Items               = { "ComboBoxItemA", "ComboBoxItemB", "ComboBoxItemC" },
+                                                    SelectedIndex       = 0,
+                                                    HorizontalAlignment = HorizontalAlignment.Left
+                                                }
+                                            }
+                                        });
+
+        Screen demoScreen = new()
         {
-            _graphicsDeviceManager = new GraphicsDeviceManager(this);
-
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-            Window.AllowUserResizing = true;
-            Window.ClientSizeChanged += WindowOnClientSizeChanged;
-        }
-
-        private void WindowOnClientSizeChanged(object sender, EventArgs eventArgs)
-        {
-            _guiSystem.ClientSizeChanged();
-        }
-
-        protected override void LoadContent()
-        {
-            var viewportAdapter = new DefaultViewportAdapter(GraphicsDevice);
-            var guiRenderer = new GuiSpriteBatchRenderer(GraphicsDevice, () => Matrix.Identity);
-            var font = Content.Load<BitmapFont>("Sensation");
-            BitmapFont.UseKernings = false;
-            Skin.CreateDefault(font);
-
-            //var parser = new MarkupParser();
-
-            //var mainScreen = new Screen
-            //{
-            //    Content = parser.Parse("Features/MainWindow.mgeml", new object())
-            //};
-
-            //var textBox = mainScreen.FindControl<TextBox>("TextBox");
-            //var statusLabel = mainScreen.FindControl<Label>("StatusLabel");
-
-            //textBox.CaretIndexChanged += (sender, args) =>
-            //    statusLabel.Content = $"Ln {textBox.LineIndex + 1}, Ch {textBox.CaretIndex + 1}";
-
-
-
-            var stackTest = new DemoViewModel("Stack Panels",
-                    new StackPanel
-                    {
-                        Items =
-                        {
-                            new Button { Content = "Press Me", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top },
-                            new Button { Content = "Press Me", HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom  },
-                            new Button { Content = "Press Me", HorizontalAlignment = HorizontalAlignment.Centre, VerticalAlignment = VerticalAlignment.Centre  },
-                            new Button { Content = "Press Me", HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch },
-                        }
-                    });
-
-            var dockTest = new DemoViewModel("Dock Panels",
-                new DockPanel
-                {
-                    Items =
-                    {
-                        new Button { Content = "Dock.Top", AttachedProperties = { { DockPanel.DockProperty, Dock.Top } } },
-                        new Button { Content = "Dock.Bottom", AttachedProperties = { { DockPanel.DockProperty, Dock.Bottom } } },
-                        new Button { Content = "Dock.Left", AttachedProperties = { { DockPanel.DockProperty, Dock.Left } } },
-                        new Button { Content = "Dock.Right", AttachedProperties = { { DockPanel.DockProperty, Dock.Right } } },
-                        new Button { Content = "Fill" }
-                    }
-                });
-
-            var controlTest = new DemoViewModel("Basic Controls",
-                new StackPanel
-                {
-                    Margin = 5,
-                    Orientation = Orientation.Vertical,
-                    Items =
-                    {
-                        new Label("Buttons") { Margin = 5 },
-                        new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal,
-                            Spacing = 5,
-                            Items =
-                            {
-                                new Button { Content = "Enabled" },
-                                new Button { Content = "Disabled", IsEnabled = false },
-                                new ToggleButton { Content = "ToggleButton" }
-                            }
-                        },
-
-                        new Label("TextBox") { Margin = 5 },
-                        new TextBox {Text = "TextBox" },
-
-                        new Label("CheckBox") { Margin = 5 },
-                        new CheckBox {Content = "Check me please!"},
-
-                        new Label("ListBox") { Margin = 5 },
-                        new ListBox {Items = {"ListBoxItem1", "ListBoxItem2", "ListBoxItem3"}, SelectedIndex = 0},
-
-                        new Label("ProgressBar") { Margin = 5 },
-                        new ProgressBar {Progress = 0.5f, Width = 100},
-
-                        new Label("ComboBox") { Margin = 5 },
-                        new ComboBox {Items = {"ComboBoxItemA", "ComboBoxItemB", "ComboBoxItemC"}, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left}
-                    }
-                });
-
-            var demoScreen = new Screen
+            Content = new DockPanel
             {
-                Content = new DockPanel
+                LastChildFill = true,
+                Items =
                 {
-                    LastChildFill = true,
-                    Items =
+                    new ListBox
                     {
-                        new ListBox
-                        {
-                            Name = "DemoList",
-                            AttachedProperties = { { DockPanel.DockProperty, Dock.Left} },
-                            ItemPadding = new Thickness(5),
-                            VerticalAlignment = VerticalAlignment.Stretch,
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            SelectedIndex = 0,
-                            Items = { controlTest, stackTest, dockTest }
-                        },
-                        new ContentControl
-                        {
-                            Name = "Content",
-                            BackgroundColor = new Color(30, 30, 30)
-                        }
-                    }
+                        Name                = "DemoList",
+                        AttachedProperties  = { { DockPanel.DockProperty, Dock.Left } },
+                        ItemPadding         = new Thickness(all: 5),
+                        VerticalAlignment   = VerticalAlignment.Stretch,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        SelectedIndex       = 0,
+                        Items               = { controlTest, stackTest, dockTest }
+                    },
+                    new ContentControl { Name = "Content", BackgroundColor = new Color(r: 30, g: 30, b: 30) }
                 }
-            };
+            }
+        };
 
-            _guiSystem = new GuiSystem(viewportAdapter, guiRenderer) { ActiveScreen = demoScreen };
+        _guiSystem = new GuiSystem(viewportAdapter, guiRenderer) { ActiveScreen = demoScreen };
 
-            var demoList = demoScreen.FindControl<ListBox>("DemoList");
-            var demoContent = demoScreen.FindControl<ContentControl>("Content");
+        ListBox        demoList    = demoScreen.FindControl<ListBox>(name: "DemoList");
+        ContentControl demoContent = demoScreen.FindControl<ContentControl>(name: "Content");
 
-            demoList.SelectedIndexChanged += (sender, args) => demoContent.Content = (demoList.SelectedItem as DemoViewModel)?.Content;
-            demoContent.Content = (demoList.SelectedItem as DemoViewModel)?.Content;
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Escape))
-                Exit();
-
-            _guiSystem.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.Black);
-
-            _guiSystem.Draw(gameTime);
-        }
+        demoList.SelectedIndexChanged += (_, _) => demoContent.Content = (demoList.SelectedItem as DemoViewModel)?.Content;
+        demoContent.Content           =  (demoList.SelectedItem as DemoViewModel)?.Content;
     }
 
-    public class DemoViewModel
+    protected override void Update(GameTime gameTime)
     {
-        public DemoViewModel(string name, object content)
+        KeyboardState keyboardState = Keyboard.GetState();
+
+        if (keyboardState.IsKeyDown(Keys.Escape))
         {
-            Name = name;
-            Content = content;
+            Exit();
         }
 
-        public string Name { get; }
-        public object Content { get; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+        _guiSystem.Update(gameTime);
     }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.Black);
+
+        _guiSystem.Draw(gameTime);
+    }
+}
+
+public class DemoViewModel
+{
+    public DemoViewModel(string name, object content)
+    {
+        Name    = name;
+        Content = content;
+    }
+
+    private string Name { get; }
+
+    public object Content { get; }
+
+    public override string ToString() => Name;
 }

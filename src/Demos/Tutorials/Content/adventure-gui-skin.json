@@ -1,7 +1,11 @@
 ﻿{
   "Name": "adventure",
-  "TextureAtlases": [ "adventure-gui-atlas" ],
-  "Fonts": [ "small-font" ],
+  "TextureAtlases": [
+    "adventure-gui-atlas"
+  ],
+  "Fonts": [
+    "small-font"
+  ],
   "Cursor": {
     "TextureRegion": "cursorSword_silver",
     "Color": "#aaaaaa"

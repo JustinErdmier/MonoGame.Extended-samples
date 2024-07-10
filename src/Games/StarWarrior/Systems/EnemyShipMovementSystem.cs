@@ -36,41 +36,44 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class EnemyShipMovementSystem : EntityProcessingSystem
 {
-    public class EnemyShipMovementSystem : EntityProcessingSystem
+    private readonly GraphicsDevice _graphicsDevice;
+
+    private ComponentMapper<PhysicsComponent> _physicsMapper;
+
+    private ComponentMapper<Transform2> _transformMapper;
+
+    public EnemyShipMovementSystem(GraphicsDevice graphicsDevice)
+        : base(aspectBuilder: Aspect.All(typeof(Transform2), typeof(PhysicsComponent), typeof(EnemyComponent))) =>
+        _graphicsDevice = graphicsDevice;
+
+    public override void Initialize(IComponentMapperService mapperService)
     {
-        private readonly GraphicsDevice _graphicsDevice;
-        private ComponentMapper<Transform2> _transformMapper;
-        private ComponentMapper<PhysicsComponent> _physicsMapper;
+        _transformMapper = mapperService.GetMapper<Transform2>();
+        _physicsMapper   = mapperService.GetMapper<PhysicsComponent>();
+    }
 
-        public EnemyShipMovementSystem(GraphicsDevice graphicsDevice) 
-            : base(Aspect.All(typeof(Transform2), typeof(PhysicsComponent), typeof(EnemyComponent)))
+    public override void Process(GameTime gameTime, int entityId)
+    {
+        Transform2       transform = _transformMapper.Get(entityId);
+        PhysicsComponent physics   = _physicsMapper.Get(entityId);
+
+        Vector2  worldPosition = transform.WorldPosition;
+        Viewport viewport      = _graphicsDevice.Viewport;
+
+        if (worldPosition.X < 0 || worldPosition.X > viewport.Width)
         {
-            _graphicsDevice = graphicsDevice;
-        }
-
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-            _transformMapper = mapperService.GetMapper<Transform2>();
-            _physicsMapper = mapperService.GetMapper<PhysicsComponent>();
-        }
-
-        public override void Process(GameTime gameTime, int entityId)
-        {
-            var transform = _transformMapper.Get(entityId);
-            var physics = _physicsMapper.Get(entityId);
-
-            var worldPosition = transform.WorldPosition;
-            var viewport = _graphicsDevice.Viewport;
-
-            if (worldPosition.X < 0 || worldPosition.X > viewport.Width)
-                physics.AddAngle(180);
+            physics.AddAngle(angle: 180);
         }
     }
 }

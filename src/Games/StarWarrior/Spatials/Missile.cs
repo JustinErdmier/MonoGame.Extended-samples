@@ -4,22 +4,24 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 
-namespace StarWarrior.Spatials
+namespace StarWarrior.Spatials;
+
+internal static class Missile
 {
-    internal static class Missile
+    private static Texture2D _bullet;
+
+    public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform)
     {
-        private static Texture2D _bullet;
-
-        public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform)
+        if (_bullet == null)
         {
-            if (_bullet == null)
-                _bullet = contentManager.Load<Texture2D>("bullet");
-
-            var worldPosition = transform.WorldPosition;
-            var renderPosition = new Vector2(worldPosition.X - _bullet.Width * 0.5f, worldPosition.Y - _bullet.Height * 0.5f);
-            spriteBatch.Draw(_bullet, renderPosition, _bullet.Bounds, Color.Red);
+            _bullet = contentManager.Load<Texture2D>(assetName: "bullet");
         }
+
+        Vector2 worldPosition  = transform.WorldPosition;
+        Vector2 renderPosition = new(x: worldPosition.X - _bullet.Width * 0.5f, y: worldPosition.Y - _bullet.Height * 0.5f);
+        spriteBatch.Draw(_bullet, renderPosition, _bullet.Bounds, Color.Red);
     }
 }

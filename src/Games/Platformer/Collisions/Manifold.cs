@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Platformer.Collisions
+namespace Platformer.Collisions;
+
+public struct Manifold
 {
-    public struct Manifold
-    {
-        public float Penetration;
-        public Vector2 Normal;
-        public Vector2 Overlap;
-    }
+    public float Penetration;
+
+    public Vector2 Normal;
+
+    public Vector2 Overlap;
 }

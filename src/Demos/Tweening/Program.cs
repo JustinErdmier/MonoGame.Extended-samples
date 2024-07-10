@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace Tweening
+namespace Tweening;
+
+public static class Program
 {
-    public static class Program
+    [ STAThread ]
+    public static void Main()
     {
-        [STAThread]
-        public static void Main()
-        {
-            using (var game = new MainGame())
-                game.Run();
-        }
+        using (MainGame game = new())
+            game.Run();
     }
 }

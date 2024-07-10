@@ -1,53 +1,47 @@
-﻿using System;
-using MonoGame.Extended;
+﻿using MonoGame.Extended;
 using MonoGame.Extended.Gui;
 using MonoGame.Extended.Gui.Controls;
 
-namespace Gui.Features
-{
-    public class StackPanelView
-    {
-        public StackPanelView()
-        {
-        }
+namespace Gui.Features;
 
-        public Control Content = new StackPanel
+public class StackPanelView
+{
+    public Control Content = new StackPanel
+    {
+        Items =
         {
-            Items =
+            new Button
             {
-                new Button
-                {
-                    Content = "Press Me",
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Padding = new Thickness(5),
-                    Margin = new Thickness(5)
-                },
-                new Button
-                {
-                    Content = "Press Me",
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Bottom,
-                    Padding = new Thickness(5),
-                    Margin = new Thickness(5)
-                },
-                new Button
-                {
-                    Content = "Press Me",
-                    HorizontalAlignment = HorizontalAlignment.Centre,
-                    VerticalAlignment = VerticalAlignment.Centre,
-                    Padding = new Thickness(5),
-                    Margin = new Thickness(5)
-                },
-                new Button
-                {
-                    Content = "Press Me",
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    Padding = new Thickness(5),
-                    Margin = new Thickness(5)
-                },
+                Content             = "Press Me",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment   = VerticalAlignment.Top,
+                Padding             = new Thickness(all: 5),
+                Margin              = new Thickness(all: 5)
+            },
+            new Button
+            {
+                Content             = "Press Me",
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment   = VerticalAlignment.Bottom,
+                Padding             = new Thickness(all: 5),
+                Margin              = new Thickness(all: 5)
+            },
+            new Button
+            {
+                Content             = "Press Me",
+                HorizontalAlignment = HorizontalAlignment.Centre,
+                VerticalAlignment   = VerticalAlignment.Centre,
+                Padding             = new Thickness(all: 5),
+                Margin              = new Thickness(all: 5)
+            },
+            new Button
+            {
+                Content             = "Press Me",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment   = VerticalAlignment.Stretch,
+                Padding             = new Thickness(all: 5),
+                Margin              = new Thickness(all: 5)
             }
-        };
-    }
+        }
+    };
 }

@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ExpirationSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -34,37 +34,39 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 using System;
+
 using Microsoft.Xna.Framework;
+
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class ExpirationSystem : EntityProcessingSystem
 {
-    public class ExpirationSystem : EntityProcessingSystem
+    public ExpirationSystem()
+        : base(aspectBuilder: Aspect.All(typeof(ExpiresComponent)))
+    { }
+
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
+
+    public override void Process(GameTime gameTime, int entityId)
     {
-        public ExpirationSystem() 
-            : base(Aspect.All(typeof(ExpiresComponent)))
+        Entity           entity  = GetEntity(entityId);
+        ExpiresComponent expires = entity.Get<ExpiresComponent>();
+
+        expires.LifeTime -= gameTime.ElapsedGameTime;
+
+        if (expires.LifeTime > TimeSpan.Zero)
         {
+            return;
         }
 
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-        }
-
-        public override void Process(GameTime gameTime, int entityId)
-        {
-            var entity = GetEntity(entityId);
-            var expires = entity.Get<ExpiresComponent>();
-
-            expires.LifeTime -= gameTime.ElapsedGameTime;
-            if (expires.LifeTime > TimeSpan.Zero)
-                return;
-
-            entity.Destroy();
-            expires.LifeTime = TimeSpan.Zero;
-        }
+        entity.Destroy();
+        expires.LifeTime = TimeSpan.Zero;
     }
 }

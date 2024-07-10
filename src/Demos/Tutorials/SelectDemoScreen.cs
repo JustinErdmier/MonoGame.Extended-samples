@@ -1,59 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Gui;
 using MonoGame.Extended.Gui.Controls;
+
 using Tutorials.Demos;
 
-namespace Tutorials
+namespace Tutorials;
+
+public class SelectDemoScreen : Screen
 {
-    public class SelectDemoScreen : Screen
+    private readonly IDictionary<string, DemoBase> _demos;
+
+    private readonly Action<string> _loadDemo;
+
+    public SelectDemoScreen(IDictionary<string, DemoBase> demos, Action<string> loadDemo, Action exitGameAction)
     {
-        private readonly IDictionary<string, DemoBase> _demos;
-        private readonly Action<string> _loadDemo;
+        _demos    = demos;
+        _loadDemo = loadDemo;
 
-        public SelectDemoScreen(IDictionary<string, DemoBase> demos, Action<string> loadDemo, Action exitGameAction)
+        UniformGrid grid = new();
+
+        foreach (DemoBase demo in _demos.Values.OrderBy(i => i.Name))
         {
-            _demos = demos;
-            _loadDemo = loadDemo;
-
-            var grid = new UniformGrid();
-
-            foreach (var demo in _demos.Values.OrderBy(i => i.Name))
-            {
-                var button = new Button()
-                {
-                    Content = demo.Name,
-                    Margin = new Thickness(4),
-                };
-                button.Clicked += (sender, args) => LoadDemo(demo);
-                grid.Items.Add(button);
-            }
-
-            var closeButton = new Button()
-            {
-                Margin = 4,
-                Content = "Close",
-            };
-            closeButton.Clicked += (sender, args) => exitGameAction();
-            grid.Items.Add(closeButton);
-
-            this.Content = grid;
+            Button button = new() { Content = demo.Name, Margin = new Thickness(all: 4) };
+            button.Clicked += (sender, args) => LoadDemo(demo);
+            grid.Items.Add(button);
         }
 
-        public override void Dispose()
-        {
-            foreach (var demo in _demos.Values)
-                demo.Dispose();
+        Button closeButton = new() { Margin = 4, Content = "Close" };
+        closeButton.Clicked += (sender, args) => exitGameAction();
+        grid.Items.Add(closeButton);
 
-            base.Dispose();
+        Content = grid;
+    }
+
+    public override void Dispose()
+    {
+        foreach (DemoBase demo in _demos.Values)
+        {
+            demo.Dispose();
         }
 
-        private void LoadDemo(DemoBase demo)
-        {
-            _loadDemo(demo.Name);
-            Hide();
-        }
+        base.Dispose();
+    }
+
+    private void LoadDemo(DemoBase demo)
+    {
+        _loadDemo(demo.Name);
+        Hide();
     }
 }

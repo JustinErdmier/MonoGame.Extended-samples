@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Pong.GameObjects
+namespace Pong.GameObjects;
+
+public class Ball : GameObject
 {
-    public class Ball : GameObject
-    {
-        public Vector2 Velocity;
-    }
+    public Vector2 Velocity;
 }

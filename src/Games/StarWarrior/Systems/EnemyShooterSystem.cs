@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EnemyShooterSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -36,48 +36,50 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using Microsoft.Xna.Framework;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class EnemyShooterSystem : EntityProcessingSystem
 {
-    public class EnemyShooterSystem : EntityProcessingSystem
+    private readonly EntityFactory _entityFactory;
+
+    public EnemyShooterSystem(EntityFactory entityFactory)
+        : base(aspectBuilder: Aspect.All(typeof(WeaponComponent), typeof(Transform2), typeof(EnemyComponent))) =>
+        _entityFactory = entityFactory;
+
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
+
+    public override void Process(GameTime gameTime, int entityId)
     {
-        private readonly EntityFactory _entityFactory;
+        Entity          entity    = GetEntity(entityId);
+        Transform2      transform = entity.Get<Transform2>();
+        WeaponComponent weapon    = entity.Get<WeaponComponent>();
 
-        public EnemyShooterSystem(EntityFactory entityFactory) 
-            : base(Aspect.All(typeof(WeaponComponent), typeof(Transform2), typeof(EnemyComponent)))
+        weapon.ShootTimerDelay += gameTime.ElapsedGameTime;
+
+        if (weapon.ShootTimerDelay <= weapon.ShootDelay)
         {
-            _entityFactory = entityFactory;
+            return;
         }
 
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-        }
+        weapon.ShootTimerDelay -= weapon.ShootDelay;
 
-        public override void Process(GameTime gameTime, int entityId)
-        {
-            var entity = GetEntity(entityId);
-            var transform = entity.Get<Transform2>();
-            var weapon = entity.Get<WeaponComponent>();
+        Entity     missile          = _entityFactory.CreateMissile();
+        Transform2 missileTransform = missile.Get<Transform2>();
 
-            weapon.ShootTimerDelay += gameTime.ElapsedGameTime;
-            if (weapon.ShootTimerDelay <= weapon.ShootDelay)
-                return;
-            weapon.ShootTimerDelay -= weapon.ShootDelay;
+        Vector2 worldPosition = transform.WorldPosition;
+        missileTransform.Position = worldPosition + new Vector2(x: 0, y: 20);
 
-            var missile = _entityFactory.CreateMissile();
-            var missileTransform = missile.Get<Transform2>();
+        PhysicsComponent missilePhysics = missile.Get<PhysicsComponent>();
 
-            var worldPosition = transform.WorldPosition;
-            missileTransform.Position = worldPosition + new Vector2(0, 20);
-
-            var missilePhysics = missile.Get<PhysicsComponent>();
-
-            missilePhysics.Speed = -0.5f;
-            missilePhysics.Angle = 270;
-        }
+        missilePhysics.Speed = -0.5f;
+        missilePhysics.Angle = 270;
     }
 }

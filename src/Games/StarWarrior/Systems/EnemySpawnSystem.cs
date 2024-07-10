@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EnemySpawnSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -35,40 +35,45 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
+using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class EnemySpawnSystem : UpdateSystem
 {
-    public class EnemySpawnSystem : UpdateSystem
+    private readonly EntityFactory _entityFactory;
+
+    private readonly GraphicsDevice _graphicsDevice;
+
+    private readonly Random _random = new();
+
+    public EnemySpawnSystem(GraphicsDevice graphicsDevice, EntityFactory entityFactory)
     {
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly EntityFactory _entityFactory;
-        private readonly Random _random = new Random();
+        _graphicsDevice = graphicsDevice;
+        _entityFactory  = entityFactory;
+    }
 
-        public EnemySpawnSystem(GraphicsDevice graphicsDevice, EntityFactory entityFactory)
-        {
-            _graphicsDevice = graphicsDevice;
-            _entityFactory = entityFactory;
-        }
+    public override void Update(GameTime gameTime)
+    {
+        Viewport   viewport  = _graphicsDevice.Viewport;
+        Entity     entity    = _entityFactory.CreateEnemyShip();
+        Transform2 transform = entity.Get<Transform2>();
 
-        public override void Update(GameTime gameTime)
-        {
-            var viewport = _graphicsDevice.Viewport;
-            var entity = _entityFactory.CreateEnemyShip();
-            var transform = entity.Get<Transform2>();
+        Vector2 position;
+        position.X         = _random.Next(viewport.Width);
+        position.Y         = _random.Next(maxValue: 400) + 50;
+        transform.Position = position;
 
-            Vector2 position;
-            position.X = _random.Next(viewport.Width);
-            position.Y = _random.Next(400) + 50;
-            transform.Position = position;
-
-            var physics = entity.Get<PhysicsComponent>();
-            physics.Speed = 0.05f;
-            physics.Angle = _random.Next() % 2 == 0 ? 0 : 180;
-        }
+        PhysicsComponent physics = entity.Get<PhysicsComponent>();
+        physics.Speed = 0.05f;
+        physics.Angle = _random.Next() % 2 == 0 ? 0 : 180;
     }
 }

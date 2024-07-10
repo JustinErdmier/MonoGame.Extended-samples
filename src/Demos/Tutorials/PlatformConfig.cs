@@ -1,7 +1,6 @@
-﻿namespace Tutorials
+﻿namespace Tutorials;
+
+public class PlatformConfig
 {
-    public class PlatformConfig
-    {
-        public bool IsFullScreen { get; set; } = true;
-    }
+    public bool IsFullScreen { get; set; } = true;
 }

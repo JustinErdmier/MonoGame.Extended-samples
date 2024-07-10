@@ -1,16 +1,13 @@
 ﻿using System;
 
-namespace StarWarrior
+namespace StarWarrior;
+
+public static class Program
 {
-    public static class Program
+    [ STAThread ]
+    public static void Main(string[] args)
     {
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            using (var game = new GameMain())
-            {
-                game.Run();
-            }
-        }
+        using (GameMain game = new())
+            game.Run();
     }
 }

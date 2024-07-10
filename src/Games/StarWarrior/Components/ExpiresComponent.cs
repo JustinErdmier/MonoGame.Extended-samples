@@ -36,11 +36,11 @@
 
 using System;
 
-namespace StarWarrior.Components
+namespace StarWarrior.Components;
+
+public class ExpiresComponent
 {
-    public class ExpiresComponent
-    {
-        public bool IsExpired => LifeTime <= TimeSpan.Zero;
-        public TimeSpan LifeTime { get; set; }
-    }
+    public bool IsExpired => LifeTime <= TimeSpan.Zero;
+
+    public TimeSpan LifeTime { get; set; }
 }

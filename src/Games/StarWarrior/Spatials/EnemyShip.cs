@@ -37,22 +37,24 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 
-namespace StarWarrior.Spatials
+namespace StarWarrior.Spatials;
+
+internal static class EnemyShip
 {
-    internal static class EnemyShip
+    private static Texture2D _ship;
+
+    public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform)
     {
-        private static Texture2D _ship;
-
-        public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform)
+        if (_ship == null)
         {
-            if (_ship == null)
-                _ship = contentManager.Load<Texture2D>("enemy");
-
-            var worldPosition = transform.WorldPosition;
-            var renderPosition = new Vector2(worldPosition.X - (_ship.Width * 0.5f), worldPosition.Y - (_ship.Height * 0.5f));
-            spriteBatch.Draw(_ship, renderPosition, _ship.Bounds, Color.White);
+            _ship = contentManager.Load<Texture2D>(assetName: "enemy");
         }
+
+        Vector2 worldPosition  = transform.WorldPosition;
+        Vector2 renderPosition = new(x: worldPosition.X - _ship.Width * 0.5f, y: worldPosition.Y - _ship.Height * 0.5f);
+        spriteBatch.Draw(_ship, renderPosition, _ship.Bounds, Color.White);
     }
 }

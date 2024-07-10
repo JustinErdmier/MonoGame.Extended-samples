@@ -34,51 +34,57 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace StarWarrior.Components
+namespace StarWarrior.Components;
+
+public class HealthComponent
 {
-    public class HealthComponent
+    private int _maximumPoints;
+
+    private int _points;
+
+    public int Points
     {
-        private int _points;
-        private int _maximumPoints;
-
-        public int Points
+        get => _points;
+        set
         {
-            get { return _points; }
-            set
-            {
-                _points = value;
-                CalculateRatio();
-            }
-        }
-
-        public int MaximumPoints
-        {
-            get { return _maximumPoints; }
-            set
-            {
-                _maximumPoints = value;
-                CalculateRatio();
-            }
-        }
-
-        public float Ratio { get; private set; }
-
-        public bool IsAlive => Points > 0;
-
-        public void AddDamage(int damage)
-        {
-            if (damage <= 0)
-                return;
-
-            _points -= damage;
-            if (_points < 0)
-                _points = 0;
+            _points = value;
             CalculateRatio();
         }
+    }
 
-        private void CalculateRatio()
+    public int MaximumPoints
+    {
+        get => _maximumPoints;
+        set
         {
-            Ratio = (float)_points / MaximumPoints;
+            _maximumPoints = value;
+            CalculateRatio();
         }
+    }
+
+    public float Ratio { get; private set; }
+
+    public bool IsAlive => Points > 0;
+
+    public void AddDamage(int damage)
+    {
+        if (damage <= 0)
+        {
+            return;
+        }
+
+        _points -= damage;
+
+        if (_points < 0)
+        {
+            _points = 0;
+        }
+
+        CalculateRatio();
+    }
+
+    private void CalculateRatio()
+    {
+        Ratio = (float)_points / MaximumPoints;
     }
 }

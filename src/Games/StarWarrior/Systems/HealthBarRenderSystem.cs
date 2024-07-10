@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HealthBarRenderSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -36,53 +36,65 @@
 
 using System;
 using System.Text;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class HealthBarRenderSystem : EntityDrawSystem
 {
-    public class HealthBarRenderSystem : EntityDrawSystem
+    private readonly BitmapFont _font;
+
+    private readonly SpriteBatch _spriteBatch;
+
+    private readonly StringBuilder _stringBuilder = new();
+
+    public HealthBarRenderSystem(SpriteBatch spriteBatch, BitmapFont font)
+        : base(aspect: Aspect.All(typeof(HealthComponent), typeof(Transform2)))
     {
-        private readonly BitmapFont _font;
-        private readonly SpriteBatch _spriteBatch;
-        private readonly StringBuilder _stringBuilder = new StringBuilder();
+        _spriteBatch = spriteBatch;
+        _font        = font;
+    }
 
-        public HealthBarRenderSystem(SpriteBatch spriteBatch, BitmapFont font) 
-            : base(Aspect.All(typeof(HealthComponent), typeof(Transform2)))
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
+
+    public override void Draw(GameTime gameTime)
+    {
+        foreach (int entityId in ActiveEntities)
         {
-            _spriteBatch = spriteBatch;
-            _font = font;
-        }
+            Entity          entity    = GetEntity(entityId);
+            HealthComponent health    = entity.Get<HealthComponent>();
+            Transform2      transform = entity.Get<Transform2>();
 
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-        }
+            _stringBuilder.Clear();
+            _stringBuilder.Append(value: (float)Math.Round(value: health.Ratio * 100, digits: 1));
+            _stringBuilder.Append(value: "%");
 
-        public override void Draw(GameTime gameTime)
-        {
-            foreach (var entityId in ActiveEntities)
-            {
-                var entity = GetEntity(entityId);
-                var health = entity.Get<HealthComponent>();
-                var transform = entity.Get<Transform2>();
+            float   c              = health.Ratio / 1;
+            Color   color          = new(r: 1.0f - c, c, b: 0.0f);
+            Vector2 worldPosition  = transform.WorldPosition;
+            Vector2 renderPosition = worldPosition + new Vector2(x: 0, y: 25);
 
-                _stringBuilder.Clear();
-                _stringBuilder.Append((float)Math.Round(health.Ratio * 100, 1));
-                _stringBuilder.Append("%");
+            Size2 stringSize = _font.MeasureString(_stringBuilder) * 0.5f;
 
-                var c = health.Ratio / 1;
-                var color = new Color(1.0f - c, c, 0.0f);
-                var worldPosition = transform.WorldPosition;
-                var renderPosition = worldPosition + new Vector2(0, 25);
-
-                var stringSize = _font.MeasureString(_stringBuilder) * 0.5f;
-                _spriteBatch.DrawString(_font, _stringBuilder, renderPosition, color, 0.0f, stringSize, 1.0f, SpriteEffects.None, 0.5f);
-            }
+            _spriteBatch.DrawString(_font,
+                                    _stringBuilder,
+                                    renderPosition,
+                                    color,
+                                    rotation: 0.0f,
+                                    stringSize,
+                                    scale: 1.0f,
+                                    SpriteEffects.None,
+                                    layerDepth: 0.5f);
         }
     }
 }

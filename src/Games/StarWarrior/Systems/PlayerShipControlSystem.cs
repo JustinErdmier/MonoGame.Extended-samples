@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PlayerShipControlSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -35,95 +35,109 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class PlayerShipControlSystem : EntityProcessingSystem
 {
-    public class PlayerShipControlSystem : EntityProcessingSystem
+    private readonly EntityFactory _entityFactory;
+
+    private readonly TimeSpan _missileLaunchDelay;
+
+    private KeyboardState _lastState;
+
+    private TimeSpan _missileLaunchTimer;
+
+    public PlayerShipControlSystem(EntityFactory entityFactory)
+        : base(aspectBuilder: Aspect.All(typeof(PlayerComponent), typeof(Transform2)))
     {
-        private readonly EntityFactory _entityFactory;
-        private TimeSpan _missileLaunchTimer;
-        private readonly TimeSpan _missileLaunchDelay;
-        private KeyboardState _lastState;
+        _entityFactory      = entityFactory;
+        _missileLaunchDelay = TimeSpan.FromMilliseconds(value: 250);
+        _missileLaunchTimer = TimeSpan.Zero;
+    }
 
-        public PlayerShipControlSystem(EntityFactory entityFactory)
-            : base(Aspect.All(typeof(PlayerComponent), typeof(Transform2)))
+    private void AddMissile(Transform2 parentTransform, float angle = 90.0f, float offsetX = 0.0f)
+    {
+        Entity missile = _entityFactory.CreateMissile();
+
+        Transform2 missileTransform = missile.Get<Transform2>();
+        missileTransform.Position = parentTransform.WorldPosition + new Vector2(x: 1 + offsetX, y: -20);
+
+        PhysicsComponent missilePhysics = missile.Get<PhysicsComponent>();
+        missilePhysics.Speed = -0.5f;
+        missilePhysics.Angle = angle;
+    }
+
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
+
+    public override void Process(GameTime gameTime, int entityId)
+    {
+        Entity     entity    = GetEntity(entityId);
+        Transform2 transform = entity.Get<Transform2>();
+
+        KeyboardState keyboard  = Keyboard.GetState();
+        Vector2       direction = Vector2.Zero;
+
+        if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
         {
-            _entityFactory = entityFactory;
-            _missileLaunchDelay = TimeSpan.FromMilliseconds(250);
-            _missileLaunchTimer = TimeSpan.Zero;
+            direction -= Vector2.UnitY;
         }
 
-        private void AddMissile(Transform2 parentTransform, float angle = 90.0f, float offsetX = 0.0f)
+        if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
         {
-            var missile = _entityFactory.CreateMissile();
-
-            var missileTransform = missile.Get<Transform2>();
-            missileTransform.Position = parentTransform.WorldPosition + new Vector2(1 + offsetX, -20);
-
-            var missilePhysics = missile.Get<PhysicsComponent>();
-            missilePhysics.Speed = -0.5f;
-            missilePhysics.Angle = angle;
+            direction -= Vector2.UnitX;
         }
 
-        public override void Initialize(IComponentMapperService mapperService)
+        if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down))
         {
+            direction += Vector2.UnitY;
         }
 
-        public override void Process(GameTime gameTime, int entityId)
+        if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
         {
-            var entity = GetEntity(entityId);
-            var transform = entity.Get<Transform2>();
+            direction += Vector2.UnitX;
+        }
 
-            var keyboard = Keyboard.GetState();
-            var direction = Vector2.Zero;
+        if (keyboard.IsKeyDown(Keys.K) && !_lastState.IsKeyDown(Keys.K))
+        {
+            BitmapFont.UseKernings = !BitmapFont.UseKernings;
+        }
 
-            if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
-                direction -= Vector2.UnitY;
+        bool isMoving = direction != Vector2.Zero;
 
-            if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
-                direction -= Vector2.UnitX;
+        if (isMoving)
+        {
+            direction.Normalize();
+        }
 
-            if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down))
-                direction += Vector2.UnitY;
+        int speed = 400;
+        transform.Position += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
-                direction += Vector2.UnitX;
+        if (keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Enter))
+        {
+            _missileLaunchTimer += gameTime.ElapsedGameTime;
 
-            if (keyboard.IsKeyDown(Keys.K) && !_lastState.IsKeyDown(Keys.K))
+            if (_missileLaunchTimer <= _missileLaunchDelay)
             {
-                BitmapFont.UseKernings = !BitmapFont.UseKernings;
+                _missileLaunchTimer -= _missileLaunchDelay;
+
+                AddMissile(transform);
+                AddMissile(transform, angle: 89, offsetX: -9);
+                AddMissile(transform, angle: 91, offsetX: +9);
             }
-
-            var isMoving = direction != Vector2.Zero;
-            if (isMoving)
-            {
-                direction.Normalize();
-            }
-
-            var speed = 400;
-            transform.Position += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.Enter))
-            {
-                _missileLaunchTimer += gameTime.ElapsedGameTime;
-                if (_missileLaunchTimer <= _missileLaunchDelay)
-                {
-                    _missileLaunchTimer -= _missileLaunchDelay;
-
-                    AddMissile(transform);
-                    AddMissile(transform, 89, -9);
-                    AddMissile(transform, 91, +9);
-                }
-            }
-
-            _lastState = keyboard;
         }
+
+        _lastState = keyboard;
     }
 }

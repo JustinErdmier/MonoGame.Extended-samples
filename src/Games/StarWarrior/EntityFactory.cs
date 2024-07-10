@@ -1,57 +1,58 @@
 ﻿using System;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
+
 using StarWarrior.Components;
 
-namespace StarWarrior
+namespace StarWarrior;
+
+public class EntityFactory
 {
-    public class EntityFactory
+    // TODO: Remove this property injection.
+    public World World { get; set; }
+
+    public Entity CreateMissile()
     {
-        public EntityFactory()
-        {
-        }
+        Entity entity = World.CreateEntity();
+        entity.Attach(component: new Transform2());
+        entity.Attach(component: new SpatialFormComponent { SpatialFormFile = "Missile" });
+        entity.Attach(component: new PhysicsComponent());
+        entity.Attach(component: new ExpiresComponent { LifeTime = TimeSpan.FromMilliseconds(value: 2000) });
 
-        // TODO: Remove this property injection.
-        public World World { get; set; }
+        return entity;
+    }
 
-        public Entity CreateMissile()
-        {
-            var entity = World.CreateEntity();
-            entity.Attach(new Transform2());
-            entity.Attach(new SpatialFormComponent { SpatialFormFile = "Missile" });
-            entity.Attach(new PhysicsComponent());
-            entity.Attach(new ExpiresComponent { LifeTime = TimeSpan.FromMilliseconds(2000) });
-            return entity;
-        }
+    public Entity CreateShipExplosion()
+    {
+        Entity entity = World.CreateEntity();
+        entity.Attach(component: new Transform2());
+        entity.Attach(component: new SpatialFormComponent { SpatialFormFile = "ShipExplosion" });
+        entity.Attach(component: new ExpiresComponent { LifeTime            = TimeSpan.FromMilliseconds(value: 1000) });
 
-        public Entity CreateShipExplosion()
-        {
-            var entity = World.CreateEntity();
-            entity.Attach(new Transform2());
-            entity.Attach(new SpatialFormComponent { SpatialFormFile = "ShipExplosion" });
-            entity.Attach(new ExpiresComponent { LifeTime = TimeSpan.FromMilliseconds(1000) });
-            return entity;
-        }
+        return entity;
+    }
 
-        public Entity CreateBulletExplosion()
-        {
-            var entity = World.CreateEntity();
-            entity.Attach(new Transform2());
-            entity.Attach(new SpatialFormComponent { SpatialFormFile = "BulletExplosion" });
-            entity.Attach(new ExpiresComponent { LifeTime = TimeSpan.FromMilliseconds(1000) });
-            return entity;
-        }
+    public Entity CreateBulletExplosion()
+    {
+        Entity entity = World.CreateEntity();
+        entity.Attach(component: new Transform2());
+        entity.Attach(component: new SpatialFormComponent { SpatialFormFile = "BulletExplosion" });
+        entity.Attach(component: new ExpiresComponent { LifeTime            = TimeSpan.FromMilliseconds(value: 1000) });
 
-        public Entity CreateEnemyShip()
-        {
-            var entity = World.CreateEntity();
-            entity.Attach(new Transform2());
-            entity.Attach(new SpatialFormComponent { SpatialFormFile = "EnemyShip" });
-            entity.Attach(new HealthComponent { Points = 10, MaximumPoints = 10 });
-            entity.Attach(new WeaponComponent { ShootDelay = TimeSpan.FromSeconds(2) });
-            entity.Attach(new PhysicsComponent());
-            entity.Attach(new EnemyComponent());
-            return entity;
-        }
+        return entity;
+    }
+
+    public Entity CreateEnemyShip()
+    {
+        Entity entity = World.CreateEntity();
+        entity.Attach(component: new Transform2());
+        entity.Attach(component: new SpatialFormComponent { SpatialFormFile = "EnemyShip" });
+        entity.Attach(component: new HealthComponent { Points               = 10, MaximumPoints = 10 });
+        entity.Attach(component: new WeaponComponent { ShootDelay           = TimeSpan.FromSeconds(value: 2) });
+        entity.Attach(component: new PhysicsComponent());
+        entity.Attach(component: new EnemyComponent());
+
+        return entity;
     }
 }

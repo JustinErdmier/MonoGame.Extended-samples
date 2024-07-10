@@ -1,47 +1,48 @@
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace SpaceGame.Entities
+namespace SpaceGame.Entities;
+
+public interface IEntityManager
 {
-    public interface IEntityManager
+    T AddEntity<T>(T entity)
+        where T : Entity;
+}
+
+public class EntityManager : IEntityManager
+{
+    private readonly List<Entity> _entities;
+
+    public EntityManager() => _entities = new List<Entity>();
+
+    public IEnumerable<Entity> Entities => _entities;
+
+    public T AddEntity<T>(T entity)
+        where T : Entity
     {
-        T AddEntity<T>(T entity) where T : Entity;
+        _entities.Add(entity);
+
+        return entity;
     }
 
-    public class EntityManager : IEntityManager
+    public void Update(GameTime gameTime)
     {
-        private readonly List<Entity> _entities;
-        public IEnumerable<Entity> Entities => _entities;
-
-        public EntityManager()
+        foreach (Entity entity in _entities.Where(e => !e.IsDestroyed))
         {
-            _entities = new List<Entity>();
+            entity.Update(gameTime);
         }
 
-        public T AddEntity<T>(T entity) where T : Entity
-        {
-            _entities.Add(entity);
-            return entity;
-        }
+        _entities.RemoveAll(e => e.IsDestroyed);
+    }
 
-        public void Update(GameTime gameTime)
+    public void Draw(SpriteBatch spriteBatch)
+    {
+        foreach (Entity entity in _entities.Where(e => !e.IsDestroyed))
         {
-            foreach (var entity in _entities.Where(e => !e.IsDestroyed))
-            {
-                entity.Update(gameTime);
-            }
-
-            _entities.RemoveAll(e => e.IsDestroyed);
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            foreach (var entity in _entities.Where(e => !e.IsDestroyed))
-            {
-                entity.Draw(spriteBatch);
-            }
+            entity.Draw(spriteBatch);
         }
     }
 }

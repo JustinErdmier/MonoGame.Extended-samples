@@ -1,6 +1,4 @@
-﻿namespace StarWarrior.Components
-{
-    public class PlayerComponent
-    {
-    }
-}
+﻿namespace StarWarrior.Components;
+
+public class PlayerComponent
+{ }

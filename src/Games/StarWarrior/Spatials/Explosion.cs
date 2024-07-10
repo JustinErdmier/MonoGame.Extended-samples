@@ -37,22 +37,33 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
 using MonoGame.Extended;
 
-namespace StarWarrior.Spatials
+namespace StarWarrior.Spatials;
+
+internal static class Explosion
 {
-    internal static class Explosion
+    private static Texture2D _circle;
+
+    public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform, Color color, int radius)
     {
-        private static Texture2D _circle;
-
-        public static void Render(SpriteBatch spriteBatch, ContentManager contentManager, Transform2 transform, Color color, int radius)
+        if (_circle == null)
         {
-            if (_circle == null)
-                _circle = contentManager.Load<Texture2D>("explosion");
-
-            var worldPosition = transform.WorldPosition;
-            var renderPosition = new Vector2(worldPosition.X - radius, worldPosition.Y - radius);
-            spriteBatch.Draw(_circle, renderPosition, null, Color.White, 0, Vector2.Zero, 0.3f, SpriteEffects.None, 0);
+            _circle = contentManager.Load<Texture2D>(assetName: "explosion");
         }
+
+        Vector2 worldPosition  = transform.WorldPosition;
+        Vector2 renderPosition = new(x: worldPosition.X - radius, y: worldPosition.Y - radius);
+
+        spriteBatch.Draw(_circle,
+                         renderPosition,
+                         sourceRectangle: null,
+                         Color.White,
+                         rotation: 0,
+                         Vector2.Zero,
+                         scale: 0.3f,
+                         SpriteEffects.None,
+                         layerDepth: 0);
     }
 }

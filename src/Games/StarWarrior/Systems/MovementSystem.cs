@@ -3,7 +3,7 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MovementSystem.cs" company="GAMADU.COM">
-//     Copyright © 2013 GAMADU.COM. All rights reserved.
+//     Copyright Â© 2013 GAMADU.COM. All rights reserved.
 //
 //     Redistribution and use in source and binary forms, with or without modification, are
 //     permitted provided that the following conditions are met:
@@ -35,37 +35,38 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+
 using Microsoft.Xna.Framework;
+
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
+
 using StarWarrior.Components;
 
-namespace StarWarrior.Systems
+namespace StarWarrior.Systems;
+
+public class MovementSystem : EntityProcessingSystem
 {
-    public class MovementSystem : EntityProcessingSystem
+    public MovementSystem()
+        : base(aspectBuilder: Aspect.All(typeof(Transform2), typeof(PhysicsComponent)))
+    { }
+
+    public override void Initialize(IComponentMapperService mapperService)
+    { }
+
+    public override void Process(GameTime gameTime, int entityId)
     {
-        public MovementSystem() 
-            : base(Aspect.All(typeof(Transform2), typeof(PhysicsComponent)))
-        {
-        }
+        Entity           entity    = GetEntity(entityId);
+        Transform2       transform = entity.Get<Transform2>();
+        PhysicsComponent physics   = entity.Get<PhysicsComponent>();
 
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-        }
+        float milliseconds  = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+        float deltaPosition = physics.Speed * milliseconds;
 
-        public override void Process(GameTime gameTime, int entityId)
-        {
-            var entity = GetEntity(entityId);
-            var transform = entity.Get<Transform2>();
-            var physics = entity.Get<PhysicsComponent>();
+        Vector2 deltaRotatedPosition = new(x: (float)(Math.Cos(physics.AngleAsRadians) * deltaPosition),
+                                           y: (float)(Math.Sin(physics.AngleAsRadians) * deltaPosition));
 
-            var milliseconds = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            var deltaPosition = physics.Speed * milliseconds;
-            var deltaRotatedPosition = new Vector2(
-                (float)(Math.Cos(physics.AngleAsRadians) * deltaPosition),
-                (float)(Math.Sin(physics.AngleAsRadians) * deltaPosition));
-            transform.Position += deltaRotatedPosition;
-        }
+        transform.Position += deltaRotatedPosition;
     }
 }

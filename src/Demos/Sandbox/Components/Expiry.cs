@@ -1,12 +1,8 @@
-﻿namespace Sandbox.Components
-{
-    public class Expiry
-    {
-        public Expiry(float timeRemaining)
-        {
-            TimeRemaining = timeRemaining;
-        }
+﻿namespace Sandbox.Components;
 
-        public float TimeRemaining;
-    }
+public sealed class Expiry
+{
+    public float TimeRemaining;
+
+    public Expiry(float timeRemaining) => TimeRemaining = timeRemaining;
 }

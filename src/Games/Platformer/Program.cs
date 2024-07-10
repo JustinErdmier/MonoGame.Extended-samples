@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace Platformer
+namespace Platformer;
+
+public static class Program
 {
-    public static class Program
+    [ STAThread ]
+    private static void Main()
     {
-        [STAThread]
-        static void Main()
-        {
-            using (var game = new GameMain())
-                game.Run();
-        }
+        using (GameMain game = new())
+            game.Run();
     }
 }

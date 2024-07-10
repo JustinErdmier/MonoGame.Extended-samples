@@ -36,11 +36,11 @@
 
 using System;
 
-namespace StarWarrior.Components
+namespace StarWarrior.Components;
+
+public class WeaponComponent
 {
-    public class WeaponComponent
-    {
-        public TimeSpan ShootTimerDelay { get; set; }
-        public TimeSpan ShootDelay { get; set; }
-    }
+    public TimeSpan ShootTimerDelay { get; set; }
+
+    public TimeSpan ShootDelay { get; set; }
 }

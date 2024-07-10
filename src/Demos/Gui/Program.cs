@@ -1,20 +1,16 @@
 ﻿using System;
 
-namespace Gui
+namespace Gui;
+
+/// <summary>The main class.</summary>
+public static class Program
 {
-    /// <summary>
-    /// The main class.
-    /// </summary>
-    public static class Program
+    /// <summary>The main entry point for the application.</summary>
+    [ STAThread ]
+    private static void Main()
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            using (var game = new MainGame())
-                game.Run();
-        }
+        using MainGame game = new();
+
+        game.Run();
     }
 }

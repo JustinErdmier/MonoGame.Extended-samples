@@ -36,19 +36,20 @@
 
 using System;
 
-namespace StarWarrior.Components
+namespace StarWarrior.Components;
+
+public class PhysicsComponent
 {
-    public class PhysicsComponent
+    private const float _toRadians = (float)(Math.PI / 180.0);
+
+    public float Angle { get; set; }
+
+    public float AngleAsRadians => Angle * _toRadians;
+
+    public float Speed { get; set; }
+
+    public void AddAngle(float angle)
     {
-        private const float _toRadians = (float)(Math.PI / 180.0);
-
-        public float Angle { get; set; }
-        public float AngleAsRadians => Angle * _toRadians;
-        public float Speed { get; set; }
-
-        public void AddAngle(float angle)
-        {
-            Angle = (Angle + angle) % 360;
-        }
+        Angle = (Angle + angle) % 360;
     }
 }

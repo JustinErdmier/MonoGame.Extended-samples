@@ -7,7 +7,7 @@
 indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
-file_header_template = Copyright (c) Craftwork Games. All rights reserved.\nLicensed under the MIT license.\nSee LICENSE file in the project root for full license information.
+file_header_template = Copyright (c) Craftwork Games.All rights reserved.\nLicensed under the MIT license.\nSee LICENSE file in the project root for full license information.
 
 ################################################################################
 ### Xml files
@@ -167,7 +167,7 @@ csharp_style_conditional_delegate_call = true:suggestion
 ### Modifier preferences
 ################################################################################
 csharp_prefer_static_local_function = true:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:silent
 
 ################################################################################
 ### Code-block preferences
